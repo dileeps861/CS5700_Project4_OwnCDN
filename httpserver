@@ -1,0 +1,21 @@
+#!/bin/bash
+
+#########################################################################################
+## Script file to run the dnsserver program to download the data from the URL provided
+#########################################################################################
+## Must be run by root user or using 'sudo'
+## ./dnsserver [url]
+## url is a required field that needs to be provided to download the data
+## the data related to the URL is downloaded in the same directory where the program is being run
+if [ $# -lt 4 -o $# -gt 4 ]
+then
+    printf "Please enter the command in the following format -p <port> -n <name>"
+    exit 0
+fi
+
+p=$1
+n=$3
+port=${p:3}
+name=${n:3}
+## Run the python program to download the data from the URL provided
+python3 httpserver.py "$port" "$name"
