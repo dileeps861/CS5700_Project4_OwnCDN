@@ -1,16 +1,14 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+# Using a base resolver to make a custom DNS request and handle it
+from dnslib.server import BaseResolver
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+class DNS(BaseResolver):
+    """
+    This class is a DNS resolver that uses an active measurement process to resolve DNS queries.
+    All available IPs are stored in a config file which the active measurement uses.
+    """
+    def __init__(self, strategy):
+        self.strategy = strategy
 
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    def resolve(self,request,handler):
+        pass
