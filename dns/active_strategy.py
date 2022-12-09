@@ -5,7 +5,7 @@ to find all the closest IPs"""
 class ActiveMeasure:
     """
     A class that actively measures the load in the server and also returns a list of all the
-    closest
+    closest replicas from the origin of the request.
     """
 
     def __init__(self):
