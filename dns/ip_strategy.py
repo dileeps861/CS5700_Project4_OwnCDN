@@ -3,7 +3,7 @@ import random
 from geoip2.database import Reader
 
 
-class IPMeasure():
+class IPMeasure:
     """
     A class to find the closest IP from the client to the closest replica server based on
     geolocation. Using a maxmind database to find the closest IP to the client. Also maintains a
