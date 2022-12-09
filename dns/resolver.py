@@ -1,6 +1,6 @@
 # Using a base resolver to make a custom DNS request and handle it
 from dnslib.server import BaseResolver, DNSHandler
-
+from dnslib import DNSRecord, QTYPE, RR, A
 
 class Resolver(BaseResolver):
     """
@@ -22,4 +22,3 @@ class Resolver(BaseResolver):
         print(request)
         print(handler.client_address)
         return request.reply()
-        pass
