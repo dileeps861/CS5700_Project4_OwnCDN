@@ -1,6 +1,7 @@
 # Using a base resolver to make a custom DNS request and handle it
 from dnslib.server import BaseResolver, DNSHandler
-from dnslib import DNSRecord, QTYPE, RR, A
+from dnslib import DNSRecord, QTYPE, RR, A, RCODE
+
 
 class Resolver(BaseResolver):
     """
@@ -9,8 +10,10 @@ class Resolver(BaseResolver):
     passed as a parameter to the DNS server.
     """
 
-    def __init__(self, strategy):
+    def __init__(self, strategy, name):
         self.strategy = strategy
+        # Passing the name of the DNS server so that it can be added to the response object.
+        self.name = name
 
     def resolve(self, request, handler):
         """
@@ -19,6 +22,11 @@ class Resolver(BaseResolver):
         :param handler: Handler to handle the DNS request
         :return: An IP address of the closest replica
         """
-        print(request)
-        print(handler.client_address)
-        return request.reply()
+        client_ip = handler.client_address[0]
+        client_port = handler.client_address[1]
+        closest_replicas = self.strategy.find_closest_ip(client_ip)
+
+        # Create a DNS response
+        reply = request.reply()
+        reply.add_answer(RR(rname=self.name, rtype=QTYPE.A, rdata=A(closest_replicas[0])))
+        return reply
