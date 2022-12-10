@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # This script is used to deploy the CDN to the replicas and the DNS server.
-# The script takes the following arguments:
-# -p <port> -n <name> -u <username> -k <keyfile>
+# It takes the following arguments: -p <port> -o <origin> -n <name> -u <username> -i <keyfile>
+# Sample usage: ./runCDN -p 25019 -o cs5700cdnorigin.ccs.neu.edu -n cs5700cdn.example.com -u cdn_project_dileep_nikhil -i /Users/dileepshah/.ssh/id_ed25519.pub
 
 # Parse the command line arguments
 while getopts ":p:o:n:u:k:" opt; do
