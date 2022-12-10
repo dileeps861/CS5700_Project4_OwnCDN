@@ -9,13 +9,36 @@
 ## the data related to the URL is downloaded in the same directory where the program is being run
 if [ $# -lt 4 -o $# -gt 4 ]
 then
-    printf "Please enter the command in the following format -p <port> -n <name>"
+    printf "Supported command format: -p <port> -n <name>"
     exit 0
 fi
 
-p=$1
-n=$3
-port=${p:3}
-name=${n:3}
-## Run the python program to download the data from the URL provided
-python3 httpserver.py "$port" "$name"
+# Parse the command line arguments
+while getopts ":p:o:" opt; do
+  case $opt in
+    p) port="$OPTARG"
+    ;;
+    o) orig_name="$OPTARG"
+    ;;
+    \?) printf "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
+
+# Check if the port number is valid
+if [ $port -lt 1024 -o $port -gt 65535 ]
+then
+    printf "Port number should be between 1024 and 65535"
+    exit 0
+fi
+
+# Check if the name is valid
+if [ -z "$orig_name" ]
+then
+    printf "Name cannot be empty"
+    exit 0
+fi
+
+# Now start the server
+printf "Starting the server on port $port with name $orig_name \n"
+python3 httpserver.py -p $port -o $orig_name
