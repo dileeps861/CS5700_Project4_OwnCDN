@@ -45,3 +45,34 @@ do
     done
 done < ./dns-hosts.txt
 
+printf "Stopped dns-server on all replicas \n\n"
+
+# Now clean up the junk files on the replicas and dns servers
+# This is done so that the memory is freed up and the next time the servers are started, they start from a clean slate
+# this is very important because the dns replicas have limited memory and if we don't clean up the junk files, the servers will run out of memory
+# and will not be able to serve any requests
+
+build_path="/home/$username/p4_build"
+# Read ip addresses from the replica file and remove the build directory
+while IFS= read -r ip;
+do
+    echo "Removing build directory on $ip"
+    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" rm -rf "$build_path" ; do
+      sleep 1
+    done
+done < ./replicas.txt
+
+printf "Removed build directory on all replicas \n\n"
+
+# Read ip addresses from the dns file and remove the build directory
+while IFS= read -r ip;
+do
+    echo "Removing build directory on $ip"
+    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" rm -rf "$build_path" ; do
+      sleep 1
+    done
+done < ./dns-hosts.txt
+
+printf "Removed build directory on all dns servers \n\n"
+
+
