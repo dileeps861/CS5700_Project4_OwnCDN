@@ -1,4 +1,11 @@
 #!/bin/bash
-source deployCDN
+projectpath="/CS5700_Project4_OwnCDN/"
+port=$2
+origin=$4
+name=$6
+username=$8
+keyfile=${10}
+dns_server_ip_address="97.107.140.73"
 
-echo "Running the DNS Server "
+echo "Running the DNS Server at $dns_server_ip_address"
+
