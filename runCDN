@@ -5,9 +5,11 @@
 # -p <port> -n <name> -u <username> -k <keyfile>
 
 # Parse the command line arguments
-while getopts ":p:n:u:k:" opt; do
+while getopts ":p:o:n:u:k:" opt; do
   case $opt in
     p) port="$OPTARG"
+    ;;
+    o) origin="$OPTARG"
     ;;
     n) name="$OPTARG"
     ;;
@@ -48,6 +50,23 @@ then
     exit 0
 fi
 
-# Now start the server
-printf "Starting the server on port $port with name $name \n"
-python3 httpserver.py -p $port -n $name -u $username -k $keyfile
+# Now read the list of replicas from the replicas.txt file and run the deploy script on each replica
+while IFS= read -r ip;
+do
+    # Run the deploy script on the replica
+    ssh -i $keyfile -o StrictHostKeyChecking=no $username@$ip "bash -s" < httpserver -p $port -o $origin
+done < replicas.txt
+
+# Now read the list of DNS servers from the dns.txt file and run the deploy script on each DNS server
+while IFS= read -r ip;
+do
+    # Run the deploy script on the DNS server
+    ssh -i $keyfile -o StrictHostKeyChecking=no $username@$ip "bash -s" < dnsserver -p $port -n $name
+done < dns-hosts.txt
+
+# Now read the list of load balancers from the loadbalancers.txt file and run the deploy script on each load balancer
+#while IFS= read -r ip;
+#do
+#    # Run the deploy script on the load balancer
+#    ssh -i $keyfile -o StrictHostKeyChecking=no $username@$ip "bash -s" < loadbalancer -p $port -n $name
+#done < loadbalancers.txt
