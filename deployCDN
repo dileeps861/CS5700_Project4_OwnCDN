@@ -3,7 +3,7 @@
 username="cdn_project_dileep_nikhil"
 keyfile="/home/nikhil/.ssh/id_rsa"
 dns_server_ip_address="97.107.140.73"
-dns_build_path="/home/$username/dns_build"
+dns_build_path="/home/$username/p4_build"
 projectpath="/CS5700_Project4_OwnCDN"
 dns_files_to_copy=(dnsserver.py dns res dns-hosts.txt)
 port=$2
@@ -25,3 +25,19 @@ for file in "${dns_files_to_copy[@]}"; do
 
   echo "File copying is done!"
 done
+
+# Make the zip file of the source code and upload it to the dns server.
+file_name="p4.zip"
+
+# Read the dns server IP address from the dns-hosts.txt file and copy the source code to the dns server.
+while IFS= read -r ip; do
+  echo "Copying source code to $ip"
+  if [[ -z "$ip" ]]; then
+    continue
+  fi
+
+  # Copy the source code to the dns server.
+  # scp -o "StrictHostKeyChecking no" -i $keyfile -r $file $username@$ip:$dns_build_path ;
+
+  scp -o "StrictHostKeyChecking no" -i $keyfile $file_name $username@$dns_server_ip_address:$dns_build_path
+done < dns-hosts.txt

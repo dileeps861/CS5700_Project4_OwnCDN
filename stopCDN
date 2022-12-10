@@ -1,0 +1,78 @@
+#!/bin/bash
+
+# This script is used to stop the CDN server
+# It takes the following arguments: -p <port> -o <origin> -n <name> -u <username> -i <keyfile>
+# Sample usage: ./stopCDN -p 25019 -o cs5700cdnorigin.ccs.neu.edu -n cs5700cdn.example.com -u cdn_project_dileep_nikhil -i /Users/dileepshah/.ssh/id_ed25519.pub
+# Read port, origin, name, username and path to ssh key
+# Parse the command line arguments
+while getopts ":p:o:n:u:i:" opt; do
+  case $opt in
+    p) port="$OPTARG"
+    ;;
+    o) origin="$OPTARG"
+    ;;
+    n) name="$OPTARG"
+    ;;
+    u) username="$OPTARG"
+    ;;
+    i) keyfile="$OPTARG"
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
+
+# Read ip addresses from the replica file and stop the httpserver
+while IFS= read -r ip;
+do
+    echo "Stopping the httpserver on $ip"
+    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" pkill python -u "$username" || true;
+    do
+        sleep 1
+    done
+done < ./replicas.txt
+
+printf "Stopped http-server on all replicas \n\n"
+printf "Now stop dns server \n\n"
+
+# Read ip addresses from the dns file and stop the dnsserver
+while IFS= read -r ip;
+do
+    echo "Stopping the dnsserver on $ip"
+    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" pkill python -u "$username" || true;
+    do
+        sleep 1
+    done
+done < ./dns-hosts.txt
+
+printf "Stopped dns-server on all replicas \n\n"
+
+# Now clean up the junk files on the replicas and dns servers
+# This is done so that the memory is freed up and the next time the servers are started, they start from a clean slate
+# this is very important because the dns replicas have limited memory and if we don't clean up the junk files, the servers will run out of memory
+# and will not be able to serve any requests
+
+build_path="/home/$username/p4_build"
+# Read ip addresses from the replica file and remove the build directory
+while IFS= read -r ip;
+do
+    echo "Removing build directory on $ip"
+    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" rm -rf "$build_path" ; do
+      sleep 1
+    done
+done < ./replicas.txt
+
+printf "Removed build directory on all replicas \n\n"
+
+# Read ip addresses from the dns file and remove the build directory
+while IFS= read -r ip;
+do
+    echo "Removing build directory on $ip"
+    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" rm -rf "$build_path" ; do
+      sleep 1
+    done
+done < ./dns-hosts.txt
+
+printf "Removed build directory on all dns servers \n\n"
+
+
