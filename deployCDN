@@ -3,7 +3,7 @@
 username="cdn_project_dileep_nikhil"
 keyfile="/home/nikhil/.ssh/id_rsa"
 dns_server_ip_address="97.107.140.73"
-dns_build_path="/home/$username/dns_build"
+dns_build_path="/home/$username/p4_build"
 projectpath="/CS5700_Project4_OwnCDN"
 dns_files_to_copy=(dnsserver.py dns res)
 port=$2
