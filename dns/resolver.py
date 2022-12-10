@@ -25,8 +25,8 @@ class Resolver(BaseResolver):
         client_ip = handler.client_address[0]
         client_port = handler.client_address[1]
         closest_replicas = self.strategy.find_closest_ip(client_ip)
-
+        print(closest_replicas)
         # Create a DNS response
         reply = request.reply()
-        reply.add_answer(RR(rname=self.name, rtype=QTYPE.A, rdata=A(closest_replicas[0])))
+        reply.add_answer(RR(rname=self.name, rdata=A(closest_replicas[0][0])))
         return reply

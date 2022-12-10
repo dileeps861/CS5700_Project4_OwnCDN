@@ -1,11 +1,27 @@
 #!/bin/bash
 
 username="cdn_project_dileep_nikhil"
-keyfile="/Users/dileepshah/.ssh/id_ed25519"
-ip_address="97.107.140.73"
+keyfile="/home/nikhil/.ssh/id_rsa"
+dns_server_ip_address="97.107.140.73"
 dns_build_path="/home/$username/dns_build"
+projectpath="/CS5700_Project4_OwnCDN"
+dns_files_to_copy=(dnsserver.py dns res)
+port=$2
+origin=$4
+name=$6
+username=$8
+keyfile=${10}
 
-ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$ip_address rm -rf $dns_build_path ;
+echo "Deploying the CDN to "
+ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$dns_server_ip_address rm -rf $dns_build_path ;
 
-ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$ip_address mkdir -p $dns_build_path ;
-ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$ip_address pwd;
+ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$dns_server_ip_address mkdir -p $dns_build_path ;
+ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$dns_server_ip_address pwd;
+
+
+for file in "${dns_files_to_copy[@]}"; do
+  echo "Copying $file to $dns_dns_build_path"
+    scp -o "StrictHostKeyChecking no" -i $keyfile -r $file $username@$dns_server_ip_address:$dns_build_path ;
+
+  echo "File copying is done!"
+done

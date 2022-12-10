@@ -1,5 +1,7 @@
 import random
+from math import sqrt
 
+import geoip2.errors
 from geoip2.database import Reader
 
 
@@ -21,7 +23,9 @@ class IPMeasure:
                                     "170.187.240.5": (-33.8715, 151.2006),
                                     }
         self.private_ip_ranges = [(167772160, 184549375), (2886729728, 2887778303), (3232235520,
-                                                                                     3232301055)]
+                                                                               3232301055)]
+        # Maintain a cache and result of all seen client IPs upto this point
+        self.ip_cache = {}
 
     def find_closest_ip(self, client_ip):
         """
@@ -29,12 +33,19 @@ class IPMeasure:
         geolocation.
         """
         if self.check_if_private(client_ip):
-            return random.choice(list(self.replica_ip_lat_long.values()))
+            # If the IP is private, we return a random shuffled order of replica IPs.
+            return random.shuffle(list(self.replica_ip_lat_long.values()))
 
         # Find the closest IP to the current one using a distance algorithm
-
+        ip_distance_vector = []  # This stores a tuple with the IP and the associated distance
         for key, value in self.replica_ip_lat_long.items():
-            pass
+            print("Here!")
+            ip_distance_vector.append(
+                (key, self.calculate_distance(value, self.client_location_from_db(client_ip))))
+
+        # Returning a list of all replicas which are closest to the client
+        ip_distance_vector.sort(key=lambda x: x[1])
+        return ip_distance_vector
 
     def client_location_from_db(self, client_ip):
         """
@@ -43,8 +54,11 @@ class IPMeasure:
         :return: A set of latitude and longitude of the client.
         """
         with Reader('./res/GeoLite2-City.mmdb') as reader:
-            response = reader.city(client_ip)
-            return response.location.latitude, response.location.longitude
+            try:
+                response = reader.city(client_ip)
+                return response.location.latitude, response.location.longitude
+            except geoip2.errors.AddressNotFoundError:
+                return random.choice(list(self.replica_ip_lat_long.values()))
 
     def check_if_private(self, ip_address):
         """
@@ -85,4 +99,5 @@ class IPMeasure:
         :param client_coordinates: The coordinates of the client
         :return: The distance between the client and the replica server
         """
-        pass
+        return sqrt(((replica_coordinates[0] - client_coordinates[0]) ** 2) + (
+                    (replica_coordinates[1] - client_coordinates[1]) ** 2))
