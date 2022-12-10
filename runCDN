@@ -1,4 +1,53 @@
 #!/bin/bash
-source deployCDN
 
-echo "Running the DNS Server "
+# This script is used to deploy the CDN to the replicas and the DNS server.
+# The script takes the following arguments:
+# -p <port> -n <name> -u <username> -k <keyfile>
+
+# Parse the command line arguments
+while getopts ":p:n:u:k:" opt; do
+  case $opt in
+    p) port="$OPTARG"
+    ;;
+    n) name="$OPTARG"
+    ;;
+    u) username="$OPTARG"
+    ;;
+    k) keyfile="$OPTARG"
+    ;;
+    \?) printf "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
+
+# Check if the port number is valid
+if [ $port -lt 1024 -o $port -gt 65535 ]
+then
+    printf "Port number should be between 1024 and 65535"
+    exit 0
+fi
+
+# Check if the name is valid
+if [ -z "$name" ]
+then
+    printf "Name cannot be empty"
+    exit 0
+fi
+
+# Check if the username is valid
+if [ -z "$username" ]
+then
+    printf "Username cannot be empty"
+    exit 0
+fi
+
+# Check if the keyfile is valid
+if [ -z "$keyfile" ]
+then
+    printf "Keyfile cannot be empty"
+    exit 0
+fi
+
+# Now start the server
+printf "Starting the server on port $port with name $name \n"
+python3 httpserver.py -p $port -n $name -u $username -k $keyfile

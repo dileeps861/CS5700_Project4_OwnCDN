@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# This script is used to stop the CDN server
+# It takes the following arguments: -p <port> -o <origin> -n <name> -u <username> -i <keyfile>
+
+# Read port, origin, name, username and path to ssh key
+# Parse the command line arguments
+while getopts ":p:o:n:u:i:" opt; do
+  case $opt in
+    p) port="$OPTARG"
+    ;;
+    o) origin="$OPTARG"
+    ;;
+    n) name="$OPTARG"
+    ;;
+    u) username="$OPTARG"
+    ;;
+    i) keyfile="$OPTARG"
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
+
+# Read ip addresses from the replica file and stop the httpserver
+while IFS= read -r ip;
+do
+    echo "Stopping the httpserver on $ip"
+    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" pkill python -u "$username" || true;
+    do
+        sleep 1
+    done
+done < ./replicas.txt
+
+printf "Stopped http-server on all replicas \n\n"
+printf "Now stop dns server \n\n"
+
+# Read ip addresses from the dns file and stop the dnsserver
+while IFS= read -r ip;
+do
+    echo "Stopping the dnsserver on $ip"
+    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" pkill python -u "$username" || true;
+    do
+        sleep 1
+    done
+done < ./dns-hosts.txt
+
