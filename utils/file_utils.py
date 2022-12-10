@@ -10,13 +10,13 @@ class FileUtil:
     @staticmethod
     def save_website_data_in_disk(website_name, web_data):
         with open(website_name, 'wb') as f:
-            f.write(web_data)
+            f.write(FileUtil.compress_website_data(web_data))
 
     # Get the website data from the disk.
     @staticmethod
     def get_website_data_from_disk(website_name):
         with open(website_name, 'rb') as f:
-            return f.read()
+            return FileUtil.decompress_website_data(f.read())
 
     # Check if the website data is present in the disk.
     @staticmethod
@@ -38,6 +38,10 @@ class FileUtil:
         return True
 
     @staticmethod
-    def compress_website_data(website_name):
-        return zlib.compress(website_name)
+    def compress_website_data(website_data):
+        return zlib.compress(website_data)
+
+    @staticmethod
+    def decompress_website_data(website_data):
+        return zlib.decompress(website_data)
 

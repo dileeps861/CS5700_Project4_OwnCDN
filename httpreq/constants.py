@@ -4,4 +4,5 @@ class Constants(object):
     ORIGIN_SERVER_PAGE_URL = "/landing"
     ORIGIN_SERVER_PORT = 8080
     LANDING_URL_RESPONSE_CODE = 204
+    HTTP_EXTENSION_CODE = 'http://'
 

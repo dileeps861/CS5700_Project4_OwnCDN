@@ -1,0 +1,11 @@
+#!/bin/bash
+
+username="cdn_project_dileep_nikhil"
+keyfile="/Users/dileepshah/.ssh/id_ed25519"
+ip_address="97.107.140.73"
+dns_build_path="/home/$username/dns_build"
+
+ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$ip_address rm -rf $dns_build_path ;
+
+ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$ip_address mkdir -p $dns_build_path ;
+ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$ip_address pwd;

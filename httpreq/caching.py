@@ -31,3 +31,10 @@ class Cache:
     # Get all the websites from the cache.
     def get_all_pages(self):
         return self.cache.items()
+
+    # Check if the website is present in the cache.
+    def is_website_present_in_cache(self, page_name):
+        if page_name in self.cache:
+            self.cache.move_to_end(page_name, last=False)
+        return page_name in self.cache
+
