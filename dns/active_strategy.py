@@ -10,3 +10,11 @@ class ActiveMeasure:
 
     def __init__(self):
         pass
+
+    def find_closest_ips(self, client_ip):
+        """
+        This function finds the closest IPs from the client to based on an active measurement
+        strategy. Uses scamper which runs remotely on the replicas to ping the client. The
+        replica with the lowest RTT is the closest replica.
+        """
+        pass
