@@ -1,16 +1,12 @@
-# Internal server to handle http requests and resolve dns
 import socketserver
-import urllib.request
 from http.server import HTTPServer, BaseHTTPRequestHandler
 from typing import Tuple
-from urllib import request
 
-from tornado.web import RequestHandler
-
-from httpreq.constants import Constants
 from httpreq.cache_origin_http import WebDownloader
+from httpreq.constants import Constants
 
 
+# Internal server to handle http requests and resolve cdn
 class Server(object):
     def __init__(self, port: int = Constants.REPLICA_PORT, origin: str = Constants.ORIGIN_URL):
         self.origin = origin
@@ -24,7 +20,7 @@ class Server(object):
         return _server
 
 
-# Internal server to handle http requests and resolve dns requests
+# Internal server to handle http requests and resolve cdn requests
 # This is the server that will be used to handle the requests from the client
 class InternalServer(BaseHTTPRequestHandler):
     origin = ""
