@@ -45,3 +45,22 @@ class FileUtil:
     def decompress_website_data(website_data):
         return zlib.decompress(website_data)
 
+    @staticmethod
+    def create_dir_if_not_exists(dir_name):
+        if not os.path.exists(dir_name):
+            os.makedirs(dir_name)
+
+    @staticmethod
+    def generate_file_path(dir_name, file_name):
+        return os.path.join(dir_name, file_name)
+
+    @staticmethod
+    def generate_file_name(url_path):
+        return url_path.replace('/', '_')
+
+    @staticmethod
+    def save_str_file(file_path, file_data):
+        with open(file_path, 'w') as f:
+            f.write(file_data)
+
+
