@@ -4,8 +4,8 @@ Resolver class and the strategy class, which is to be used by the resolver.
 """
 
 from dnslib.server import DNSServer
-from dns.resolver import Resolver
-from dns import ip_strategy
+from cdn.resolver import Resolver
+from cdn import ip_strategy
 import argparse
 
 
@@ -25,7 +25,7 @@ def start_server(port_number, name_server):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parser for DNS server')
-    parser.add_argument('-p', type=int, default=25019, help='The port the dns server will bind to')
+    parser.add_argument('-p', type=int, default=25019, help='The port the cdn server will bind to')
     parser.add_argument('-n', type=str, default='localhost',
                         help='The CDN name which the '
                              'server will convert to '
