@@ -17,13 +17,13 @@ while getopts ":p:o:n:u:i:" opt; do
     ;;
     i) keyfile="$OPTARG"
     ;;
-    \?) printf "Invalid option -$OPTARG" >&2
+    \?) printf "Invalid option %s" -"$OPTARG" >&2
     ;;
   esac
 done
 
 # Check if the port number is valid
-if [ $port -lt 1024 -o $port -gt 65535 ]
+if [ "$port" -lt 1024 ] && [ "$port" -gt 65535 ]
 then
     printf "Port number should be between 1024 and 65535"
     exit 0
@@ -50,19 +50,21 @@ then
     exit 0
 fi
 
-# Now read the list of replicas from the replicas.txt file and run the deploy script on each replica
-while IFS= read -r ip;
-do
-    # Run the deploy script on the replica
-    ssh -i $keyfile -o StrictHostKeyChecking=no $username@$ip "bash -s" < httpserver -p $port -o $origin
-done < replicas.txt
-
 # Now read the list of DNS servers from the dns.txt file and run the deploy script on each DNS server
 while IFS= read -r ip;
 do
     # Run the deploy script on the DNS server
-    ssh -i $keyfile -o StrictHostKeyChecking=no $username@$ip "bash -s" < dnsserver -p $port -n $name
+    ssh -i "$keyfile" -o StrictHostKeyChecking=no "$username"@"$ip" "bash -s" < dnsserver -p "$port" -n "$name"
 done < dns-hosts.txt
+
+# Now read the list of replicas from the replicas.txt file and run the deploy script on each replica
+while IFS= read -r ip;
+do
+    # Run the deploy script on the replica
+    ssh -i "$keyfile" -o StrictHostKeyChecking=no "$username"@"$ip" "bash -s" < httpserver -p "$port" -o "$origin"
+done < replicas.txt
+
+
 
 # Now read the list of load balancers from the loadbalancers.txt file and run the deploy script on each load balancer
 #while IFS= read -r ip;
