@@ -48,26 +48,33 @@ then
 fi
 
 dns_build_path="/home/$username/p4_build"
-
+dns_server_ip_address="97.107.140.73"
 #upload httpserver the copies to replicas.
 http_files_to_copy=(replicas.txt httpreq httpserver httpserver.py utils Makefile)
 
 # Dns server files to copy
 dns_files_to_copy=(dnsserver.py cdn res dns-hosts.txt dnsserver)
 
-#echo "Deploying the CDN to $dns_server_ip_address"
-#
-#echo "Removing the old build directory"
-#ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$dns_server_ip_address rm -rf $dns_build_path ;
-#echo "Creating the new build directory"
-#ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$dns_server_ip_address mkdir -p $dns_build_path ;
-#
-#for file in "${dns_files_to_copy[@]}"; do
-#  echo "Copying $file to $dns_dns_build_path"
-#    scp -o "StrictHostKeyChecking no" -i "$keyfile" -r "$file" "$username"@$dns_server_ip_address:$dns_build_path ;
-#
-#  echo "File copying is done!"
-#done
+echo "Deploying the CDN to $dns_server_ip_address"
+
+echo "Removing the old build directory"
+ssh -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@$dns_server_ip_address rm -rf "$dns_build_path" ;
+echo "Creating the new build directory"
+ssh -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@$dns_server_ip_address mkdir -p "$dns_build_path" ;
+
+while IFS= read -r ip; do
+
+  if [[ -z "$ip" ]]; then
+    continue
+  fi
+
+  for file in "${dns_files_to_copy[@]}"; do
+    echo "Copying $file to $ip"
+      scp -o "StrictHostKeyChecking no" -i "$keyfile" -r "$file" "$username"@"$ip":"$dns_build_path" ;
+
+    echo "File copying is done!"
+  done
+done < dns-hosts.txt
 
 ## Make the zip file of the source code and upload it to the dns server.
 #file_name="p4.zip"
