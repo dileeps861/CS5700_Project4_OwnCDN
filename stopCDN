@@ -26,7 +26,7 @@ done
 while IFS= read -r ip;
 do
     echo "Stopping the httpserver on $ip"
-    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" pkill python -u "$username" || true;
+    until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" pkill python -u "$username" || true;
     do
         sleep 1
     done
@@ -39,7 +39,7 @@ printf "Now stop dns server \n\n"
 while IFS= read -r ip;
 do
     echo "Stopping the dnsserver on $ip"
-    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" pkill python -u "$username" || true;
+    until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" pkill python -u "$username" || true;
     do
         sleep 1
     done
@@ -57,7 +57,7 @@ build_path="/home/$username/p4_build"
 while IFS= read -r ip;
 do
     echo "Removing build directory on $ip"
-    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" rm -rf "$build_path" ; do
+    until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" rm -rf "$build_path" ; do
       sleep 1
     done
 done < ./replicas.txt
@@ -68,7 +68,7 @@ printf "Removed build directory on all replicas \n\n"
 while IFS= read -r ip;
 do
     echo "Removing build directory on $ip"
-    until ssh -n "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" rm -rf "$build_path" ; do
+    until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" rm -rf "$build_path" ; do
       sleep 1
     done
 done < ./dns-hosts.txt

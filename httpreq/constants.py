@@ -2,8 +2,7 @@
 class Constants(object):
     HTTP_STATUS_CODE_OK = 200
     HTTP_NOT_FOUND_RESPONSE_CODE = 404
-    LANDING_URL = "/grading/beacon"
-    GRADING_BEACON_URL = "/landing"
+    GRADING_BEACON_URL = "/grading/beacon"
     ORIGIN_SERVER_PORT = 8080
     GRADING_BEACON_RESPONSE_CODE = 204
     HTTP_EXTENSION_CODE = 'http://'
