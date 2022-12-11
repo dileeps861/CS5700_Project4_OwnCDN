@@ -18,7 +18,7 @@ while getopts ":p:o:" opt; do
   case $opt in
     p) port="$OPTARG"
     ;;
-    o) orig_name="$OPTARG"
+    o) origin_name="$OPTARG"
     ;;
     \?) printf "Invalid option -$OPTARG" >&2
     ;;
@@ -33,12 +33,12 @@ then
 fi
 
 # Check if the name is valid
-if [ -z "$orig_name" ]
+if [ -z "$origin_name" ]
 then
     printf "Name cannot be empty"
     exit 0
 fi
 
 # Now start the server
-printf "Starting the server on port $port with name $orig_name \n"
-python3 httpserver.py -p $port -o $orig_name
+printf "Starting the server on port $port with name $origin_name \n"
+python3 httpserver.py -p $port -o $origin_name

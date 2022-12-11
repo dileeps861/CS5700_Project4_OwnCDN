@@ -5,7 +5,7 @@
 # Sample usage: ./runCDN -p 25019 -o cs5700cdnorigin.ccs.neu.edu -n cs5700cdn.example.com -u cdn_project_dileep_nikhil -i /Users/dileepshah/.ssh/id_ed25519.pub
 
 # Parse the command line arguments
-while getopts ":p:o:n:u:k:" opt; do
+while getopts ":p:o:n:u:i:" opt; do
   case $opt in
     p) port="$OPTARG"
     ;;
@@ -15,7 +15,7 @@ while getopts ":p:o:n:u:k:" opt; do
     ;;
     u) username="$OPTARG"
     ;;
-    k) keyfile="$OPTARG"
+    i) keyfile="$OPTARG"
     ;;
     \?) printf "Invalid option -$OPTARG" >&2
     ;;
