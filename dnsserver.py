@@ -15,11 +15,9 @@ def start_server(port_number, name_server):
     :param port_number: The port number to bind the DNS server on
     :param name_server: The name of the server.
     """
-    print("Port bound to ", port_number)
-    print("Name server is ", name_server)
     strategy = ip_strategy.IPMeasure()
-    resolver = Resolver(strategy, name_server)
-    server = DNSServer(resolver, port=port_number, address=name_server)
+    resolver = Resolver(strategy, name_server, port_number)
+    server = DNSServer(resolver, port=port_number)
     server.start()
 
 

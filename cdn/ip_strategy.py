@@ -32,6 +32,10 @@ class IPMeasure:
         This function finds the closest IP from the client to the closest replica server based on
         geolocation.
         """
+        # Check if IP in cache
+        if client_ip in self.ip_cache:
+            return self.ip_cache[client_ip]
+
         if self.check_if_private(client_ip):
             # If the IP is private, we return a random shuffled order of replica IPs.
             return random.shuffle(list(self.replica_ip_lat_long.values()))
@@ -39,7 +43,6 @@ class IPMeasure:
         # Find the closest IP to the current one using a distance algorithm
         ip_distance_vector = []  # This stores a tuple with the IP and the associated distance
         for key, value in self.replica_ip_lat_long.items():
-            print("Here!")
             ip_distance_vector.append(
                 (key, self.calculate_distance(value, self.client_location_from_db(client_ip))))
 
