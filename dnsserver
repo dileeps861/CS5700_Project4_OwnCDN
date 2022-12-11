@@ -7,9 +7,11 @@
 ## ./dnsserver [url]
 ## url is a required field that needs to be provided to download the data
 ## the data related to the URL is downloaded in the same directory where the program is being run
+
 if [ $# -lt 4 -o $# -gt 4 ]
 then
-    printf "Please enter the command in the following format -p <port> -n <name>"
+    printf "Please enter the command in the following format -p <port> -n <name> \n"
+    printf "Args: %s \n" "$@"
     exit 0
 fi
 
@@ -17,9 +19,11 @@ p=$2
 n=$4
 
 # Setup venv and install dependencie
+cd p4_build || exit
 python3 -m venv testvenv
 source testvenv/bin/activate
 pip3 install dnslib
 pip3 install geoip2
+
 ## Run the python program to download the data from the URL provided
 python3 dnsserver.py -p "$p" -n "$n"

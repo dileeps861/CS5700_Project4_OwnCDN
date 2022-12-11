@@ -76,11 +76,7 @@ while IFS= read -r ip; do
   done
 done < dns-hosts.txt
 
-## Make the zip file of the source code and upload it to the dns server.
-#file_name="p4.zip"
-#
 ## Read the dns server IP address from the dns-hosts.txt file and copy the source code to the dns server.
-# shellcheck disable=SC2095
 while IFS= read -r ip; do
 
   #echo "Copying source code to $ip"
