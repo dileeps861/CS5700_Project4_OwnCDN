@@ -1,18 +1,59 @@
 #!/bin/bash
+# Sample usage:
+# ./deployCDN -p 25019 -o cs5700cdnorigin.ccs.neu.edu -n cs5700cdn.example.com -u cdn_project_dileep_nikhil -i /Users/dileepshah/.ssh/id_ed25519
 
-username="cdn_project_dileep_nikhil"
-keyfile="/home/nikhil/.ssh/id_rsa"
-dns_server_ip_address="97.107.140.73"
+while getopts ":p:o:n:u:i:" opt; do
+  case $opt in
+    p) port="$OPTARG"
+    ;;
+    o) origin="$OPTARG"
+    ;;
+    n) name="$OPTARG"
+    ;;
+    u) username="$OPTARG"
+    ;;
+    i) keyfile="$OPTARG"
+    ;;
+    \?) printf "Invalid option %s" "$OPTARG" >&2
+    ;;
+  esac
+done
+
+# Check if the port number is valid
+if [ "$port" -lt 1024 ] && [ "$port" -gt 65535 ]
+then
+    printf "Port number should be between 1024 and 65535"
+    exit 0
+fi
+
+# Check if the name is valid
+if [ -z "$name" ]
+then
+    printf "Name cannot be empty"
+    exit 0
+fi
+
+# Check if the username is valid
+if [ -z "$username" ]
+then
+    printf "Username cannot be empty"
+    exit 0
+fi
+
+# Check if the keyfile is valid
+if [ -z "$keyfile" ]
+then
+    printf "Keyfile cannot be empty"
+    exit 0
+fi
+
 dns_build_path="/home/$username/p4_build"
-old_path="/home/$username/dns_build"
-projectpath="/CS5700_Project4_OwnCDN"
+
+#upload httpserver the copies to replicas.
+http_files_to_copy=(replicas.txt httpreq httpserver httpserver.py utils Makefile)
+
+# Dns server files to copy
 dns_files_to_copy=(dnsserver.py cdn res dns-hosts.txt dnsserver)
-https_files_to_copy=(httpserver.py httpreq httpserver utils replicas.txt Makefile)
-port=$2
-origin=$4
-name=$6
-username=$8
-keyfile=${10}
 
 #echo "Deploying the CDN to $dns_server_ip_address"
 #
@@ -41,41 +82,24 @@ while IFS= read -r ip; do
   if [[ -z "$ip" ]]; then
     continue
   fi
-
-  #echo "Deploying to the replica server at $ip2"
-
-  #echo "Removing the old build directory"
-
-  until ssh -o "StrictHostKeyChecking no" -i "$keyfile" $username@$ip rm -rf $dns_build_path ; do
+  
+  until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" rm -rf "$dns_build_path" ; do
     sleep 1
-    done
-
-  #echo "Creating the new build directory"
-
-  until ssh -o "StrictHostKeyChecking no" -i "$keyfile" $username@$ip mkdir -p $dns_build_path ; do
-    sleep 1
-    done
-
-
-  # shellcheck disable=SC1073
-  for file in "${https_files_to_copy[@]}";do
-    until scp -o "StrictHostKeyChecking no" -i "$keyfile" -r "$file" $username@$ip:$dns_build_path ; do
-      sleep 1
-      done
-    #echo "Copying $file done!!"
   done
-done < replicas.txt
 
-#  echo "Removing the old build directory"
-#
-#  ssh -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@139.144.30.25 rm -rf $dns_build_path ;
-#
-#  echo "Creating the new build directory"
-#
-#  ssh -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@139.144.30.25 mkdir -p $dns_build_path ;
-#
-#  for file in "${https_files_to_copy[@]}";do
-#    echo "Copying $file to $ip"
-#    scp -o "StrictHostKeyChecking no" -i "$keyfile" -r "$file" "$username"@139.144.30.25:$dns_build_path ;
-#    echo "Copying $file done!!"
-#  done
+  until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" mkdir -p "$dns_build_path" ; do
+    sleep 1
+  done
+
+  until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" ls ; do
+    sleep 1
+  done
+
+  # Copy the source code to the replica server.
+  # scp -o "StrictHostKeyChecking no" -i $keyfile -r $file $username@$ip:$dns_build_path ;
+  for file_name in "${http_files_to_copy[@]}"; do
+    scp -o "StrictHostKeyChecking no" -i "$keyfile" -r "$file_name" "$username"@"$ip":"$dns_build_path";
+  done
+  echo "File copying is done to $ip!"
+
+done < replicas.txt
