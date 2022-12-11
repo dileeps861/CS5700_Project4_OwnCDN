@@ -13,10 +13,13 @@ then
     exit 0
 fi
 
-p=$1
-n=$3
-port=${p:3}
-name=${n:3}
+p=$2
+n=$4
 
+# Setup venv and install dependencie
+python3 -m venv testvenv
+source testvenv/bin/activate
+pip3 install dnslib
+pip3 install geoip2
 ## Run the python program to download the data from the URL provided
-python3 main.py "$port" "$name"
+python3 dnsserver.py -p "$p" -n "$n"

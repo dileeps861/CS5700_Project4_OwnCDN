@@ -49,31 +49,40 @@ fi
 
 dns_build_path="/home/$username/p4_build"
 
+#upload httpserver the copies to replicas.
+http_files_to_copy=(replicas.txt httpreq httpserver httpserver.py utils Makefile)
+
+# Dns server files to copy
+dns_files_to_copy=(dnsserver.py cdn res dns-hosts.txt dnsserver)
+
+#echo "Deploying the CDN to $dns_server_ip_address"
 #
-#echo "Deploying the CDN to "
+#echo "Removing the old build directory"
 #ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$dns_server_ip_address rm -rf $dns_build_path ;
-#
+#echo "Creating the new build directory"
 #ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$dns_server_ip_address mkdir -p $dns_build_path ;
-#ssh -o "StrictHostKeyChecking no" -i $keyfile $username@$dns_server_ip_address pwd;
-#
 #
 #for file in "${dns_files_to_copy[@]}"; do
 #  echo "Copying $file to $dns_dns_build_path"
-#    scp -o "StrictHostKeyChecking no" -i $keyfile -r $file $username@$dns_server_ip_address:$dns_build_path ;
+#    scp -o "StrictHostKeyChecking no" -i "$keyfile" -r "$file" "$username"@$dns_server_ip_address:$dns_build_path ;
 #
 #  echo "File copying is done!"
 #done
 
-# Make the zip file of the source code and upload it to the dns server.
-http_files_to_copy=(replicas.txt httpreq httpserver httpserver.py utils Makefile)
-
-# Read the dns server IP address from the dns-hosts.txt file and copy the source code to the dns server.
+## Make the zip file of the source code and upload it to the dns server.
+#file_name="p4.zip"
+#
+## Read the dns server IP address from the dns-hosts.txt file and copy the source code to the dns server.
+# shellcheck disable=SC2095
 while IFS= read -r ip; do
-  echo "Copying source code to $ip"
+
+  #echo "Copying source code to $ip"
+
+  #skip if empty
   if [[ -z "$ip" ]]; then
     continue
   fi
-
+  
   until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" rm -rf "$dns_build_path" ; do
     sleep 1
   done
@@ -86,13 +95,11 @@ while IFS= read -r ip; do
     sleep 1
   done
 
-  # Copy the source code to the dns server.
+  # Copy the source code to the replica server.
   # scp -o "StrictHostKeyChecking no" -i $keyfile -r $file $username@$ip:$dns_build_path ;
   for file_name in "${http_files_to_copy[@]}"; do
-    echo "Copying $file_name to $dns_build_path"
-
     scp -o "StrictHostKeyChecking no" -i "$keyfile" -r "$file_name" "$username"@"$ip":"$dns_build_path";
-    echo "File copying is done!"
   done
+  echo "File copying is done to $ip!"
 
 done < replicas.txt
