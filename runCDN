@@ -50,6 +50,12 @@ then
     exit 0
 fi
 
+while IFS= read -r ip;
+do
+    # Run the deploy script on the DNS server
+    ssh -i $keyfile -o StrictHostKeyChecking=no $username@$ip "bash -s" < dnsserver -p $port -n $name
+done < dns-hosts.txt
+
 # Now read the list of replicas from the replicas.txt file and run the deploy script on each replica
 while IFS= read -r ip;
 do
@@ -58,11 +64,7 @@ do
 done < replicas.txt
 
 # Now read the list of DNS servers from the dns.txt file and run the deploy script on each DNS server
-while IFS= read -r ip;
-do
-    # Run the deploy script on the DNS server
-    ssh -i $keyfile -o StrictHostKeyChecking=no $username@$ip "bash -s" < dnsserver -p $port -n $name
-done < dns-hosts.txt
+
 
 # Now read the list of load balancers from the loadbalancers.txt file and run the deploy script on each load balancer
 #while IFS= read -r ip;
