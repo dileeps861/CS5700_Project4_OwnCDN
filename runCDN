@@ -50,17 +50,39 @@ then
     exit 0
 fi
 
+replica_build_path="/home/$username/p4_build"
 
-# Now read the list of DNS servers from the dns.txt file and run the deploy script on each DNS server
+# Now read the list of DNS servers from the dns-hosts.txt file and run the deploy script on each DNS server
 while IFS= read -r ip;
 do
     # Run the deploy script on the DNS server
-    ssh -i $keyfile -o StrictHostKeyChecking=no $username@$ip "bash -s" < dnsserver -p $port -n $name
+     # Run the deploy script on the replica
+    printf "Running dns-server on : %s\n" "$ip"
+
+    until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" chmod +x "$replica_build_path"/dnsserver;
+    do
+        sleep 1
+    done
+
+    until ssh -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" nohup "$replica_build_path"/dnsserver -p "$port" -n "$name" > /dev/null 2>/dev/null &
+    do
+        sleep 1
+    done
 done < dns-hosts.txt
 
 # Now read the list of replicas from the replicas.txt file and run the deploy script on each replica
 while IFS= read -r ip;
 do
     # Run the deploy script on the replica
-    ssh -i "$keyfile" -o StrictHostKeyChecking=no "$username"@"$ip" "bash -s" < httpserver -p "$port" -o "$origin"
+    printf "Running http-server on : %s\n" "$ip"
+
+    until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" chmod +x "$replica_build_path"/httpserver;
+    do
+        sleep 1
+    done
+
+    until ssh -n -o "StrictHostKeyChecking no" -i "$keyfile" "$username"@"$ip" nohup "$replica_build_path"/httpserver -p "$port" -o "$origin" > /dev/null 2>/dev/null &
+    do
+        sleep 1
+    done
 done < replicas.txt

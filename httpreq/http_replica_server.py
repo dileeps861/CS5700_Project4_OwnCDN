@@ -37,7 +37,7 @@ class InternalServer(BaseHTTPRequestHandler):
     def do_GET(self):
         complete_url = Constants.HTTP_EXTENSION_CODE + self.origin + ":" + str(Constants.ORIGIN_SERVER_PORT) + \
                        self.path
-        if self.path in Constants.GRADING_BEACON_URL:
+        if Constants.GRADING_BEACON_URL in self.path:
             self.send_response(Constants.GRADING_BEACON_RESPONSE_CODE, "OK")
             self.send_header("Content-type", "text/html")
             self.end_headers()
