@@ -6,7 +6,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Tuple
 from urllib.request import Request, urlopen
 
-from httpreq.cache_origin_http import LocalResponse
+from httpreq.http_response import LocalResponse
 from httpreq.caching import Cache
 from httpreq.constants import Constants
 from httpreq.sqlite_cache import CacheWithDB
@@ -15,7 +15,7 @@ from utils.file_utils import FileUtil
 _origin = ""
 _port = 0
 _TOTAL_ALLOWED_SPACE = Constants.TOTAL_ALLOWED_SPACE
-_cache = Cache(_TOTAL_ALLOWED_SPACE)
+_cache = CacheWithDB()
 
 
 # Internal server to handle http requests and resolve cdn
@@ -24,11 +24,9 @@ class Server(object):
     def __init__(self, port: int = Constants.REPLICA_PORT, origin: str = Constants.ORIGIN_URL):
         global _origin
         global _port
-        global _TOTAL_ALLOWED_SPACE
         global _cache
         _origin = origin
         _port = port
-        _TOTAL_ALLOWED_SPACE = Constants.MAX_ALLOWED_SPACE - FileUtil.estimate_space()
         _cache = CacheWithDB()
 
     def start_server(self):
@@ -147,10 +145,8 @@ if __name__ == '__main__':
             sys.stderr.flush()
             sys.stdout.flush()
 
-
     except KeyboardInterrupt:
         pass
     finally:
         serv.shutdown()
 
-    print("Starting server, use <Ctrl-C> to stop")

@@ -6,7 +6,6 @@ from collections import OrderedDict
 class Cache:
     MAX_CACHE_SIZE = 50
     so_far_cached = 0
-    MAX_CAPACITY = 15 * 1024 * 1024
     def __init__(self, allowed_size):
         self.cache = OrderedDict()
         self.cache_size = 0
@@ -24,7 +23,6 @@ class Cache:
     # Remove the least recently website from the cache if the cache is full.
     def remove_least_recently_used_website(self):
         key, value = self.cache.popitem(last=False)
-        so_far_cached -= len(value)
         self.cache_size -= 1
         return key
 

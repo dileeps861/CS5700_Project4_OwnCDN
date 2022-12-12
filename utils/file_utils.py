@@ -64,21 +64,4 @@ class FileUtil:
             f.write(file_data)
 
 
-    # Gets the size of the a given Directory
-    @staticmethod
-    def estimate_space():
-        path = "."
-        dir_size = 0
-        for dir_path, dir_names, filenames in os.walk(path):
-            for f in filenames:
-                fp = os.path.join(dir_path, f)
-                dir_size += os.path.getsize(fp)
-        "Directory Size =" + str(dir_size)
-        return dir_size
-
-    @staticmethod
-    def get_content_size(obj, st):
-
-        return 0
-
 
