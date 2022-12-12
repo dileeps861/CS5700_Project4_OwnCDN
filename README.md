@@ -56,6 +56,11 @@ make
 2. Used test scripts to test the cache implementation.
 
 ## References
-1. 
+1. https://manpages.ubuntu.com/manpages/trusty/man1/scamper.1.html
+2. https://www.geeksforgeeks.org/geoip-based-routing/
+3. https://github.com/paulc/dnslib/tree/master/dnslib
+4. https://github.com/maxmind/GeoIP2-python
+5. https://docs.python.org/3/library/urllib.html
+6. https://docs.python.org/3/library/sqlite3.html
 
 
