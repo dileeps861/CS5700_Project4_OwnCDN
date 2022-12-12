@@ -1,6 +1,7 @@
 # Code to measure the replica server load
 import os
 
+
 class ReplicaServerLoadMeasure:
     def __init__(self):
         self.geo_ip_locator = None
@@ -15,7 +16,7 @@ class ReplicaServerLoadMeasure:
     # Run scamper command to probe replica IPs
     @staticmethod
     def get_replica_loads_using_scamper(replica_ips, replica_port, replica_ip_ratings_pairs):
-        scamper_cmd = "timeout 3s scamper -c \"trace -d " +str(replica_port) + " -P tcp-ack\""
+        scamper_cmd = "timeout 3s scamper -c \"trace -d " + str(replica_port) + " -P tcp-ack\""
         for ip in replica_ips:
             scamper_cmd += " -i " + ip[0]
         cmd = os.popen(scamper_cmd)
@@ -46,13 +47,10 @@ class ReplicaServerLoadMeasure:
 
             replica_ip_ratings_pairs[replica_ip] = ratings
 
-    # Get the replica server load using the loadavg command.
-    def get_replica_loads_using_loadavg(self):
-        replica_ip_ratings_pairs = {}
-        for ip in self.geo_ip_locator.replica_IPs:
-            cmd = os.popen("ssh -o StrictHostKeyChecking=no " + ip + " \"cat /proc/loadavg\"")
-            out = cmd.read()
-            cmd.close()
-            loadavg = out.split(" ")[0]
-            replica_ip_ratings_pairs[ip] = float(loadavg)
-        return replica_ip_ratings_pairs
+    @staticmethod
+    def measure_with_scamper_attach():
+        command = "sc_attach -c 'ping' -i replicas.txt -p 26099"
+        cmd = os.popen(command)
+        out = cmd.read()
+        cmd.close()
+        print(out)
