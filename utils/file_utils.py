@@ -52,7 +52,7 @@ class FileUtil:
 
     @staticmethod
     def generate_file_path(dir_name, file_name):
-        return os.path.join(dir_name, file_name)
+        return dir_name+"/"+file_name
 
     @staticmethod
     def generate_file_name(url_path):
@@ -62,5 +62,23 @@ class FileUtil:
     def save_str_file(file_path, file_data):
         with open(file_path, 'w') as f:
             f.write(file_data)
+
+
+    # Gets the size of the a given Directory
+    @staticmethod
+    def estimate_space():
+        path = "."
+        dir_size = 0
+        for dir_path, dir_names, filenames in os.walk(path):
+            for f in filenames:
+                fp = os.path.join(dir_path, f)
+                dir_size += os.path.getsize(fp)
+        "Directory Size =" + str(dir_size)
+        return dir_size
+
+    @staticmethod
+    def get_content_size(obj, st):
+
+        return 0
 
 

@@ -106,3 +106,5 @@ while IFS= read -r ip; do
   echo "File copying is done to $ip!"
 
 done < replicas.txt
+
+exit 0

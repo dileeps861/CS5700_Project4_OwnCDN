@@ -1,7 +1,6 @@
 # This class will download the website data from the internet.
 
 # This class will download the website data from the internet.
-import logging
 import threading
 from urllib.request import Request, urlopen
 
@@ -45,14 +44,12 @@ class WebDownloader:
     # Download the website data from the internet.
     def download_website_data(self, complete_url, data_path) -> LocalResponse:
         if self.cache.is_website_present_in_cache(data_path):
-            print("Website is present in cache." + complete_url)
             try:
-                downloaded_data = FileUtil.get_website_data_from_disk(self.cache.get_website_data(data_path))
+                downloaded_data = FileUtil.get_website_data_from_disk(FileUtil.generate_file_name(data_path))
                 return LocalResponse(downloaded_data, 200)
             except Exception as e:
                 print(e)
         try:
-            print("Website is not present in cache. " + complete_url)
             req = Request(complete_url, headers=self.headers_dict)
             response = urlopen(req)
             downloaded_data = response.read()
@@ -64,11 +61,17 @@ class WebDownloader:
             # This is done to avoid downloading the website again and again.
             # Save is done in a separate thread to avoid blocking the main thread.
             # This is done to serve the request as soon as possible while saving the website data in disk.
-            threading.Thread(target=FileUtil.save_website_data_in_disk, args=(complete_file_name, downloaded_data))\
-                .start()
-            self.cache.cache_website(data_path, complete_file_name)
+
+            # threading.Thread(target=FileUtil.save_website_data_in_disk, args=(complete_file_name, downloaded_data))\
+            #     .start()
+            FileUtil.save_website_data_in_disk(complete_file_name, downloaded_data)
+            was_pop, popped_path = self.cache.cache_website(data_path, complete_file_name)
+            if was_pop:
+                file_name = FileUtil.generate_file_name(popped_path)
+                complete_file_name = FileUtil.generate_file_path(Constants.FILE_DIRECTORY, file_name)
+                threading.Thread(target=FileUtil.delete_website_data_from_disk, args=complete_file_name)\
+                    .start()
             return LocalResponse(downloaded_data, Constants.HTTP_STATUS_CODE_OK)
 
         except Exception as e:
-            logging.error(e)
             return LocalResponse("", Constants.HTTP_NOT_FOUND_RESPONSE_CODE)

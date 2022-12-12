@@ -1,4 +1,5 @@
 # Project 4: Roll Your Own CDN
+
 Authors :
 
 *Nikhil Mollay : 001020022*
@@ -6,7 +7,7 @@ Authors :
 *Dileep Kumar Shah : 001044150* 
 
 ## High Level Approach
-
+### Exclude doc files from the submission
 
 ## Contributions 
 
