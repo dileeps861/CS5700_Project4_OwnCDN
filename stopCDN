@@ -2,7 +2,7 @@
 
 # This script is used to stop the CDN server
 # It takes the following arguments: -p <port> -o <origin> -n <name> -u <username> -i <keyfile>
-# Sample usage: ./stopCDN -p 25019 -o cs5700cdnorigin.ccs.neu.edu -n cs5700cdn.example.com -u cdn_project_dileep_nikhil -i /Users/dileepshah/.ssh/id_ed25519.pub
+# Sample usage: ./stopCDN -p 25019 -o cs5700cdnorigin.ccs.neu.edu -n cs5700cdn.example.com -u cdn_project_dileep_nikhil -i /Users/dileepshah/.ssh/id_ed25519
 # ./[deploy|run|stop]CDN -p <port> -o <origin> -n <name> -u <username> -i <keyfile>
 # Read port, origin, name, username and path to ssh key
 # Parse the command line arguments
