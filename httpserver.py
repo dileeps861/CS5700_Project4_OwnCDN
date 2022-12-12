@@ -6,9 +6,7 @@ import sys
 import threading
 import time
 
-from httpreq.constants import Constants
 from httpreq.http_replica_server import Server
-from utils.file_utils import FileUtil
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Parser for DNS server')

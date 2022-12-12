@@ -8,7 +8,7 @@ import zlib
 
 class CacheWithDB:
     def __init__(self):
-        self.max_capacity = 15000000
+        self.max_capacity = 150000000
         self.connection = sqlite3.connect("websites.db", check_same_thread=False)
         self.db_connection_executor = self.connection.cursor()
         self.db_connection_executor.execute('''CREATE TABLE IF NOT EXISTS websites(content_path TEXT primary key, content BLOB, frequency_count INT, data_size INT);''')
@@ -25,6 +25,7 @@ class CacheWithDB:
 
     def get_cache_size(self):
         return os.stat('websites.db').st_size
+
 
     def is_full(self, data):
         cache_size = self.get_cache_size()
@@ -46,7 +47,7 @@ class CacheWithDB:
         #  The least priority data is the one with the least frequency count.
         while self.get_cache_size() + file_size >= self.max_capacity:
             self.db_connection_executor.execute(
-                "DELETE FROM websites WHERE Path in (SELECT content_path FROM websites WHERE frequency_count = (SELECT MIN(frequency_count) FROM websites))")
+                "DELETE FROM websites WHERE content_path in (SELECT content_path FROM websites WHERE frequency_count = (SELECT MIN(frequency_count) FROM websites))")
             self.connection.commit()
             self.db_connection_executor.execute("VACUUM")
 

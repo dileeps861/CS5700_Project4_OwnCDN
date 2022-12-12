@@ -85,5 +85,5 @@ do
         sleep 1
     done
 done < replicas.txt
-
+sleep 3m
 exit 0

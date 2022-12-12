@@ -12,7 +12,7 @@ of the replicas. We used the Dnslib library t obuild the dns server and the maxm
 tried to sue sc_attach and scamper to get some active measurements from the server itself.
 
 For the Http server we used the urllib2 library to create the http server and to also make calls to the origin server. We used sqlute to cache get results in the replica
-to ensure persistence. To cache the data at the replcias we followed a LRU cache eviction policy.
+to ensure persistence. To cache the data at the replicas we followed a LRU cache eviction policy.
 
 ## Contributions 
 

@@ -2,8 +2,10 @@ import socketserver
 import sys
 import threading
 import time
+import urllib
 from http.server import HTTPServer, BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Tuple
+from urllib.error import HTTPError
 from urllib.request import Request, urlopen
 
 from httpreq.http_response import LocalResponse
@@ -53,27 +55,42 @@ class InternalServer(BaseHTTPRequestHandler):
             self.send_header("Content-type", "text/html")
             self.end_headers()
             return
+        try:
 
-        response = InternalServer.download_website_data(complete_url, self.path)
-
-        # Send not found response if the website was not valid.
-        if response is None:
+            if _cache.is_website_present_in_cache(self.path):
+                response_data = _cache.get_cached_website(self.path)
+            else:
+                with urllib.request.urlopen(complete_url) as response:
+                    response_data = response.read()
+                    _cache.cache_website(self.path, response_data)
+            self.send_response(Constants.HTTP_STATUS_CODE_OK, "OK")
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(response_data)
+            self.wfile.flush()
+            return
+        except HTTPError as e:
             self.send_response(Constants.HTTP_NOT_FOUND_RESPONSE_CODE, "Not Found")
             self.send_header("Content-type", "text/html")
             self.end_headers()
+            self.wfile.write(str(e).encode('utf-8'))
+            self.wfile.flush()
             return
-
-        # Prepare the response to send back to the client.
-        self.send_response(response.get_status_code())
-        self.send_header("Content-type", "text/html")
-        self.send_header("Content-Length", str(len(response.get_data())))
-        if response.get_headers():
-            for header in response.get_headers():
-                self.send_header(header, response.get_headers()[header])
-        self.end_headers()
-        if response.get_data():
-            self.wfile.write(response.get_data())
-        self.wfile.flush()
+        # response = InternalServer.download_website_data(complete_url, self.path)
+        #
+        # # Send not found response if the website was not valid.
+        # if response is None:
+        #     self.send_response(Constants.HTTP_NOT_FOUND_RESPONSE_CODE, "")
+        #     self.end_headers()
+        #     return
+        #
+        # # Prepare the response to send back to the client.
+        # self.send_response(response.get_status_code())
+        # self.send_header("Content-type", "text/html")
+        # self.end_headers()
+        # if response.get_data():
+        #     self.wfile.write(response.get_data())
+        #     self.wfile.flush()
 
     @staticmethod
     def download_website_data(complete_url, data_path) -> LocalResponse:
@@ -119,7 +136,6 @@ class InternalServer(BaseHTTPRequestHandler):
         #     return LocalResponse("", Constants.HTTP_NOT_FOUND_RESPONSE_CODE)
 
         if _cache.is_website_present_in_cache(data_path):
-            print("Website is present in cache")
             return LocalResponse(_cache.get_website_data(data_path), 200)
         try:
             req = Request(complete_url)
@@ -129,7 +145,8 @@ class InternalServer(BaseHTTPRequestHandler):
             return LocalResponse(downloaded_data, Constants.HTTP_STATUS_CODE_OK)
 
         except Exception as e:
-            return LocalResponse("", Constants.HTTP_NOT_FOUND_RESPONSE_CODE)
+            # print(e)
+            return LocalResponse(data_path, Constants.HTTP_NOT_FOUND_RESPONSE_CODE)
 
 
 if __name__ == '__main__':
