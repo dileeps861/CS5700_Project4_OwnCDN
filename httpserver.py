@@ -2,6 +2,9 @@
 This file is the main entry file for the http server. It will start the server and listen to the requests.
 """
 import argparse
+import sys
+import threading
+import time
 
 from httpreq.http_replica_server import Server
 
@@ -14,4 +17,18 @@ if __name__ == '__main__':
     print("Port bound to ", args.p)
     serverObj = Server(args.p, args.o)
     server = serverObj.start_server()
-    server.serve_forever()
+
+    # server.serve_forever()
+    thread = threading.Thread(target=server.serve_forever)
+    thread.daemon = True
+    thread.start()
+    try:
+        while 1:
+            time.sleep(1)
+            sys.stderr.flush()
+            sys.stdout.flush()
+
+    except KeyboardInterrupt:
+        pass
+    finally:
+        server.shutdown()

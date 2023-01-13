@@ -52,7 +52,7 @@ class FileUtil:
 
     @staticmethod
     def generate_file_path(dir_name, file_name):
-        return os.path.join(dir_name, file_name)
+        return dir_name+"/"+file_name
 
     @staticmethod
     def generate_file_name(url_path):
@@ -62,5 +62,6 @@ class FileUtil:
     def save_str_file(file_path, file_data):
         with open(file_path, 'w') as f:
             f.write(file_data)
+
 
 

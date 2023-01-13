@@ -50,7 +50,7 @@ fi
 dns_build_path="/home/$username/p4_build"
 dns_server_ip_address="97.107.140.73"
 #upload httpserver the copies to replicas.
-http_files_to_copy=(replicas.txt httpreq httpserver httpserver.py utils Makefile)
+http_files_to_copy=(replicas.txt httpreq httpserver httpserver.py utils Makefile websites.db)
 
 # Dns server files to copy
 dns_files_to_copy=(dnsserver.py cdn res dns-hosts.txt dnsserver)
@@ -106,3 +106,5 @@ while IFS= read -r ip; do
   echo "File copying is done to $ip!"
 
 done < replicas.txt
+
+exit 0

@@ -9,18 +9,20 @@ class Test:
         self.url = url
 
     def test(self):
-        headers_dict = {'Accept-Language': 'en-IN,en-US;q=0.9,en;q=0.8,hi-IN;q=0.7,hi;q=0.6,en-GB;q=0.5',
-                        'Accept-Encoding': "utf-8",
-                        'accept': 'text / html, application / xhtml + xml, application / xml;q = 0.9, image / avif, '
-                                  'image / webp, image / apng, * / *;q = 0.8, application / signed - exchange;v = b3;q '
-                                  '= 0.9', 'Connection': 'keep-alive', 'path': '/wiki/Creational_pattern'}
-        req = Request(url, headers=headers_dict)
-        response = urlopen(req)
-        return response.read()
+        try:
+            print(self.url)
+            req = Request(self.url)
+            response = urlopen(req)
+            return response.read()
+        except Exception as e:
+            return ("Error: " + str(e)).encode('utf-8')
 
 
 if __name__ == '__main__':
     # Download the website data from the internet.
-    url = "http://localhost:7566/YouTube"
+    url = "http://localhost:25019/American_Civil_war"
+
+        # print(url)
     test = Test(url)
-    FileUtil.save_str_file('index.html', test.test().decode("utf-8"))
+    res = test.test()
+

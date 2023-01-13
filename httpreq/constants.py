@@ -11,4 +11,6 @@ class Constants(object):
     REPLICA_URL = 'cs5700cdnreplica.ccs.neu.edu'
     REPLICA_PORT = 25019
     KHOURY_SERVER_URL = 'cs5700cdnproject.ccs.neu.edu'
+    TOTAL_ALLOWED_SPACE = 10000000
+    MAX_ALLOWED_SPACE = 1500000
 
