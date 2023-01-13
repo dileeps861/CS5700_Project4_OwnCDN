@@ -1,6 +1,7 @@
 # Code to measure the replica server load
 import os
 
+
 class ReplicaServerLoadMeasure:
     def __init__(self):
         self.geo_ip_locator = None

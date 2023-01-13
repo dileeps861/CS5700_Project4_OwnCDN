@@ -42,11 +42,10 @@ class Resolver(BaseResolver):
         client_ip = handler.client_address[0]
         client_port = handler.client_address[1]
         closest_replicas = self.strategy.find_closest_ip(client_ip)
+        cdn.server_load_measure.ReplicaServerLoadMeasure.measure_with_scamper_attach()
         # Check server loads using scamper and test the latency of the replicas
         # Create a DNS response
-        reply = request.reply()
-        reply.add_answer(RR(rname=self.name, rdata=A(closest_replicas[0][0])))
-        return reply
+        return request.reply().add_answer(RR(rname=self.name, rdata=A(closest_replicas[0][0])))
 
     def decide_based_on_load(self, replica_loads, replica_distances):
         """

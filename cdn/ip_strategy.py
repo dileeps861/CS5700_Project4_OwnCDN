@@ -48,6 +48,7 @@ class IPMeasure:
 
         # Returning a list of all replicas which are closest to the client
         ip_distance_vector.sort(key=lambda x: x[1])
+        self.ip_cache[client_ip] = ip_distance_vector
         return ip_distance_vector
 
     def client_location_from_db(self, client_ip):
